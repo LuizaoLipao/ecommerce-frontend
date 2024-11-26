@@ -19,7 +19,6 @@ function loadProducts() {
                     </div>
                 `; 
             });
-
      
             productList.innerHTML = productCards;
 
