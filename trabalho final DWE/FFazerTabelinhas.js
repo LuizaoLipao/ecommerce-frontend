@@ -1,41 +1,55 @@
-function loadProducts() {
-    const http = new XMLHttpRequest();
-
-  
-    http.onload = function() {
-        if (this.status === 200) {
-            const products = JSON.parse(this.response);
-            const productList = document.getElementById("productList");
-            let productCards = "";
-         
-            products.forEach((product) => {
-                productCards += `
-                    <div class="col-md-3">
-                        <div class="product-card">
-                            <img src="${product.imgurl}" alt="${product.nome}">
-                            <h5>${product.descricao}</h5>
-                            <p>Preço: R$ ${product.preco}</p>
-                        </div>
-                    </div>
-                `; 
-            });
-     
-            productList.innerHTML = productCards;
-
-    
-            document.getElementById("productCount").innerText = `Total de produtos: ${100}`;
-        } else {
-            console.error('Falha ao carregar produtos');
-        }
-    };
-
-  
-    http.open('GET', 'http://localhost:8080/produto', true);
-    http.send();
-   
+import './style.css'
+ 
+// URL da API
+const apiURL = 'http://localhost:8080/produto';
+ 
+// Função para buscar as fotos da API
+async function fetchPhotos() {
+  try {
+    const response = await fetch(apiURL);
+    const photos = await response.json();
+    displayPhotos(photos.slice(0, 100));  // Exibe todas as fotos retornadas pela API
+  } catch (error) {
+    console.error('Erro ao carregar as fotos:', error);
+  }
 }
-
-
-window.onload = function() {
-    loadProducts();
-};
+ 
+// Função para exibir as fotos na galeria
+function displayPhotos(photos) {
+  const gallery = document.getElementById('gallery');
+  const totalPhotosElement = document.getElementById('total-photos');
+  gallery.innerHTML = '';  // Limpa a galeria antes de adicionar novas fotos
+ 
+  // Atualiza o total de fotos no rodapé
+  totalPhotosElement.textContent = photos.length;
+ 
+  // Exibe cada foto na galeria com título e preço
+  photos.forEach(produto => {
+    const photoContainer = document.createElement('div');
+    photoContainer.classList.add('photo-item');
+ 
+    // Criar a imagem
+    const imgElement = document.createElement('img');
+    imgElement.src = produto.imgurl;
+    imgElement.alt = produto.descricao;
+ 
+    // Criar o título
+    const titleElement = document.createElement('h3');
+    titleElement.textContent = produto.nome;
+ 
+    // Criar o preço
+    const priceElement = document.createElement('p');
+    priceElement.textContent = 'R$ '+ produto.preco;
+ 
+    // Adicionar imagem, título e preço ao container da foto
+    photoContainer.appendChild(imgElement);
+    photoContainer.appendChild(titleElement);
+    photoContainer.appendChild(priceElement);
+ 
+    // Adicionar o container da foto na galeria
+    gallery.appendChild(photoContainer);
+  });
+}
+ 
+// Chama a função ao carregar a página
+fetchPhotos();
